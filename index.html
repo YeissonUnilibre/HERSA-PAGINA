@@ -4,6 +4,43 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Eventos HERSA — Ceremonias de Grado · Cali</title>
+
+  <!-- ══ Para Google y para cuando comparten el enlace ══
+       description: es el texto que Google muestra bajo el título en los
+       resultados. Sin esto, Google inventa un fragmento cualquiera de la página.
+       Las etiquetas og: son las que hacen que al pegar el enlace en WhatsApp
+       salga una tarjeta con logo y descripción en vez de una URL pelada. -->
+  <meta name="description" content="Togas, birretes y ceremonias de grado en Cali. Más de 20 años acompañando a colegios del Valle del Cauca. Entradas virtuales, fotografía y todo para que el grado salga perfecto." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://eventoshersa.com/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Eventos HERSA — Ceremonias de Grado en Cali" />
+  <meta property="og:description" content="Togas, birretes y ceremonias de grado en Cali. Consulta aquí tus entradas virtuales al grado." />
+  <meta property="og:url" content="https://eventoshersa.com/" />
+  <meta property="og:image" content="https://eventoshersa.com/logo.jpg" />
+  <meta property="og:locale" content="es_CO" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Eventos HERSA — Ceremonias de Grado en Cali" />
+  <meta name="twitter:description" content="Togas, birretes y ceremonias de grado en Cali. Consulta aquí tus entradas virtuales al grado." />
+  <meta name="twitter:image" content="https://eventoshersa.com/logo.jpg" />
+
+  <!-- Ficha del negocio para Google: ayuda a que salga la tarjeta lateral con
+       teléfono y ubicación cuando alguien busca "eventos hersa". -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Eventos HERSA",
+    "description": "Togas, birretes y ceremonias de grado en Cali, Valle del Cauca.",
+    "url": "https://eventoshersa.com/",
+    "telephone": "+573180155526",
+    "image": "https://eventoshersa.com/logo.jpg",
+    "address": { "@type": "PostalAddress", "addressLocality": "Cali", "addressRegion": "Valle del Cauca", "addressCountry": "CO" },
+    "areaServed": "Cali, Valle del Cauca"
+  }
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -105,9 +142,93 @@
       letter-spacing: 1px;
     }
 
+    /* Agrupa lo de la derecha del menú: teléfono + botón de los tres puntos */
+    .navbar-acciones {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* Botón de los tres puntos. Discreto, sin competirle al logo ni al
+       teléfono; lo interesante está adentro. */
+    .menu-puntos {
+      position: relative;
+    }
+    .menu-puntos-boton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px; height: 38px;
+      background: transparent;
+      border: 1px solid rgba(201,168,76,0.45);
+      border-radius: 50%;
+      color: var(--dorado-light);
+      font-size: 19px;
+      line-height: 1;
+      cursor: pointer;
+      transition: background .25s, border-color .25s, color .25s;
+      font-family: inherit;
+    }
+    .menu-puntos-boton:hover,
+    .menu-puntos-boton[aria-expanded="true"] {
+      background: var(--dorado);
+      border-color: var(--dorado);
+      color: var(--azul-oscuro);
+    }
+
+    .menu-puntos-panel {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      min-width: 250px;
+      background: rgba(5, 22, 46, 0.97);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(201,168,76,0.35);
+      border-radius: 14px;
+      padding: 8px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.45);
+      /* Cerrado: invisible y sin capturar clics. Se anima al abrir para que
+         no aparezca de golpe. */
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: opacity .2s ease, transform .2s ease, visibility .2s;
+    }
+    .menu-puntos-panel.abierto {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .menu-puntos-panel a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 15px;
+      border-radius: 10px;
+      color: var(--crema);
+      text-decoration: none;
+      font-size: 14.5px;
+      font-weight: 500;
+      letter-spacing: .3px;
+      transition: background .18s, color .18s;
+    }
+    .menu-puntos-panel a:hover { background: rgba(201,168,76,0.15); color: var(--dorado-light); }
+    .menu-puntos-icono { font-size: 18px; line-height: 1; }
+    .menu-puntos-sub {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(248,245,239,0.55);
+      margin-top: 2px;
+      letter-spacing: 0;
+    }
+
     @media (max-width: 600px) {
       .navbar { padding: 16px 20px; }
       .navbar-contact span { display: none; }
+      .navbar-acciones { gap: 10px; }
+      .menu-puntos-panel { min-width: 230px; }
     }
 
     /* ══════════════════════════════════════
@@ -664,10 +785,64 @@
       <div class="brand-text-bottom">Cali · Valle del Cauca</div>
     </div>
   </div>
-  <a href="tel:3180155526" class="navbar-contact">
-    📞 <span>318 015 5526</span>
-  </a>
+  <div class="navbar-acciones">
+    <a href="tel:3180155526" class="navbar-contact">
+      📞 <span>318 015 5526</span>
+    </a>
+
+    <!-- Menú desplegable. El portal de entradas vive en el servidor de HERSA
+         (esta página está en GitHub Pages y no puede hablar con la API), por
+         eso es un enlace a otro subdominio y no una ruta de aquí. -->
+    <div class="menu-puntos">
+      <button type="button" class="menu-puntos-boton" id="menuBoton"
+              aria-haspopup="true" aria-expanded="false" aria-label="Abrir menú">⋮</button>
+      <div class="menu-puntos-panel" id="menuPanel" role="menu" aria-labelledby="menuBoton">
+        <a href="https://entradas.eventoshersa.com" role="menuitem">
+          <span class="menu-puntos-icono">🎟️</span>
+          <span>Mis entradas de grado
+            <span class="menu-puntos-sub">Consulta y envía tus invitaciones</span>
+          </span>
+        </a>
+        <a href="https://wa.me/573180155526" target="_blank" rel="noopener" role="menuitem">
+          <span class="menu-puntos-icono">💬</span>
+          <span>Escríbenos por WhatsApp
+            <span class="menu-puntos-sub">Cotizaciones y preguntas</span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
 </nav>
+
+<script>
+  /* Desplegable del menú. Sin librerías: la página no usa ninguna y no vale la
+     pena traer uno entero para esto. */
+  (function () {
+    var boton = document.getElementById('menuBoton');
+    var panel = document.getElementById('menuPanel');
+    if (!boton || !panel) return;
+
+    function abrir(si) {
+      panel.classList.toggle('abierto', si);
+      boton.setAttribute('aria-expanded', si ? 'true' : 'false');
+    }
+
+    boton.addEventListener('click', function (e) {
+      e.stopPropagation();
+      abrir(!panel.classList.contains('abierto'));
+    });
+
+    // Tocar fuera lo cierra: en celular es como la gente espera que funcione.
+    document.addEventListener('click', function (e) {
+      if (!panel.contains(e.target)) abrir(false);
+    });
+
+    // Escape también, para quien navega con teclado.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') abrir(false);
+    });
+  })();
+</script>
 
 
 <!-- ══════════════ SLIDER HERO ══════════════ -->
