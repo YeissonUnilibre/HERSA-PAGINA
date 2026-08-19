@@ -78,11 +78,73 @@
 
     html { scroll-behavior: smooth; }
 
+    /* EL DESLIZAMIENTO LATERAL EN CELULARES.
+     *
+     * `overflow-x: hidden` solo en el body es el arreglo a medias clásico: en
+     * los celulares el que hace el deslizamiento es `html`, no `body`, así que
+     * la página se seguía pudiendo correr a la derecha y aparecía el vacío
+     * blanco. Tiene que estar en los DOS.
+     *
+     * Y `max-width: 100%` además de `overflow`, porque en Android Chrome un
+     * elemento fijo (la barra de arriba) se mide contra el ancho TOTAL de la
+     * página, no contra la pantalla. Si la página es más ancha, la barra se
+     * estira con ella y el botón de los tres puntos —que va pegado a la
+     * derecha— se va al vacío blanco. Que fue justo lo que pasó.
+     *
+     * OJO: esto es la red de seguridad, no el arreglo. La causa real eran dos
+     * rejillas de dos columnas escritas dentro del HTML; están corregidas más
+     * abajo. Si algún día vuelve a aparecer una franja blanca, hay que buscar
+     * QUÉ se está saliendo, no confiar en estas dos líneas. */
+    html, body {
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+
     body {
       font-family: 'Montserrat', sans-serif;
       background: var(--blanco);
       color: var(--negro);
-      overflow-x: hidden;
+    }
+
+    /* Las dos rejillas de "Quiénes somos". Con auto-fit se reacomodan solas:
+       cuando no caben dos columnas, pasan a una. Sin media queries que
+       mantener y sin posibilidad de que se salgan de la pantalla. */
+    .nosotros-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: clamp(32px, 6vw, 80px);
+      align-items: center;
+    }
+    /* Dos columnas fijas y no auto-fit: con auto-fit el número de columnas
+       cambia según el ancho, y con cuatro tarjetas eso deja un hueco vacío en
+       unos tamaños y en otros no. Fijándolas, el acomodo es el mismo siempre:
+
+           +30    |  Miles
+           Cali          (ancho completo)
+           🎓            (ancho completo)
+
+       minmax(0,1fr) y no 1fr: "1fr" a secas no deja que la columna sea más
+       angosta que su contenido, así que una palabra larga la estiraría y
+       volvería a sacar la página de la pantalla. */
+    .nosotros-tarjetas {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    /* Las dos de abajo van de lado a lado. La última es el remate y queda
+       centrada, en vez de verse como una tarjeta suelta arrinconada. */
+    .tarjeta-ancha,
+    .tarjeta-remate { grid-column: 1 / -1; }
+    .tarjeta-remate {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    @media (max-width: 400px) {
+      /* En pantallas muy angostas, "+30" y "Miles" lado a lado quedan
+         apretadas y el número pierde su fuerza. Mejor una debajo de otra. */
+      .nosotros-tarjetas { grid-template-columns: 1fr; }
     }
 
     /* ══════════════════════════════════════
@@ -333,7 +395,11 @@
       color: var(--blanco);
       line-height: 1.05;
       letter-spacing: -1px;
-      margin-bottom: 10px;
+      /* Separado del renglón de abajo. Con 10 px el lema y "Más de 30 años"
+         se leían como un solo bloque; el lema es el titular y necesita aire
+         propio. Crece con la pantalla para que se vea igual de holgado en un
+         celular que en un monitor. */
+      margin-bottom: clamp(20px, 3.5vw, 34px);
       text-shadow: 0 4px 24px rgba(0,0,0,0.4);
     }
 
@@ -804,8 +870,10 @@
     </div>
   </div>
   <div class="navbar-acciones">
-    <a href="tel:3103602275" class="navbar-contact">
-      📞 <span>310 360 2275</span>
+    <!-- Lleva a WhatsApp, no a llamar. El número se deja a la vista porque es
+         lo que la gente reconoce y copia, pero al tocarlo abre el chat. -->
+    <a href="https://wa.me/573103602275" target="_blank" rel="noopener" class="navbar-contact">
+      💬 <span>310 360 2275</span>
     </a>
 
     <!-- Menú desplegable. El portal de entradas vive en el servidor de HERSA
@@ -884,11 +952,13 @@
       Momentos de Hoy<br/><em>para Siempre</em>
     </h1>
 
-    <p class="hero-subtitle">Más de 25 años de experiencia · Cali, Colombia</p>
+    <p class="hero-subtitle">Más de 30 años de experiencia · Cali, Colombia</p>
 
     <div class="hero-btns">
-      <a href="tel:3103602275" class="btn-gold">📞 Llámanos ahora</a>
-      <a href="https://wa.me/573103602275" target="_blank" class="btn-outline">💬 WhatsApp</a>
+      <!-- UN solo botón. Antes eran dos —llamar y WhatsApp— y competían entre
+           ellos: dos botones del mismo tamaño hacen dudar en vez de invitar.
+           Ahora hay una sola cosa que hacer y se ve de lejos. -->
+      <a href="https://wa.me/573103602275" target="_blank" rel="noopener" class="btn-gold">💬 Escríbenos</a>
     </div>
   </div>
 
@@ -912,7 +982,14 @@
 <!-- ══════════════ NOSOTROS ══════════════ -->
 <section class="section">
   <div class="section-inner">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;">
+    <!-- auto-fit y no "1fr 1fr": esta rejilla estaba escrita aquí dentro, y
+         lo que se escribe en el style= de la etiqueta NO lo pueden corregir las
+         reglas para celular — mandan siempre. En un teléfono de 360 px, dos
+         columnas más 80 px de separación no caben, así que la página se salía
+         de la pantalla: se podía deslizar a la derecha y aparecía el vacío
+         blanco. Con auto-fit se parte en una sola columna sola, sin necesidad
+         de ninguna regla aparte. -->
+    <div class="nosotros-grid">
       <div>
         <div class="section-eyebrow">
           <div class="eyebrow-line"></div>
@@ -926,20 +1003,22 @@
           Nuestra experiencia, dedicación y amor por lo que hacemos nos convierten en el aliado ideal para las instituciones educativas y las familias que quieren celebrar el logro más importante de sus hijos.
         </p>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="nosotros-tarjetas">
         <div style="background:var(--azul-oscuro);border-radius:16px;padding:32px 24px;text-align:center;">
           <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:800;color:var(--dorado);line-height:1;">+30</div>
           <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-top:6px;letter-spacing:1px;text-transform:uppercase;">Años de experiencia</div>
         </div>
-        <div style="background:var(--crema);border:1px solid #e5e7eb;border-radius:16px;padding:32px 24px;text-align:center;margin-top:24px;">
+        <div style="background:var(--crema);border:1px solid #e5e7eb;border-radius:16px;padding:32px 24px;text-align:center;">
           <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:800;color:var(--azul-royal);line-height:1;">Miles</div>
           <div style="font-size:12px;color:var(--gris);margin-top:6px;letter-spacing:1px;text-transform:uppercase;">De graduandos felices</div>
         </div>
-        <div style="background:var(--crema);border:1px solid #e5e7eb;border-radius:16px;padding:32px 24px;text-align:center;margin-top:-24px;">
+        <div class="tarjeta-ancha" style="background:var(--crema);border:1px solid #e5e7eb;border-radius:16px;padding:32px 24px;text-align:center;">
           <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:800;color:var(--azul-royal);line-height:1;">Cali</div>
           <div style="font-size:12px;color:var(--gris);margin-top:6px;letter-spacing:1px;text-transform:uppercase;">Valle del Cauca</div>
         </div>
-        <div style="background:linear-gradient(135deg,var(--dorado),var(--dorado-light));border-radius:16px;padding:32px 24px;text-align:center;">
+        <!-- Esta va ABAJO y de lado a lado, no en una columna: es el cierre de
+             las cuatro y se lee como el remate, no como una más de la lista. -->
+        <div class="tarjeta-remate" style="background:linear-gradient(135deg,var(--dorado),var(--dorado-light));border-radius:16px;padding:32px 24px;text-align:center;">
           <div style="font-size:36px;line-height:1;">🎓</div>
           <div style="font-size:12px;color:var(--azul-oscuro);margin-top:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Tu ceremonia perfecta</div>
         </div>
@@ -1010,12 +1089,23 @@
       <p class="section-text">Llevamos más de 30 años en Cali acompañando a instituciones educativas y familias en este momento único. Contáctenos y le asesoramos con gusto.</p>
 
       <div class="contact-cards" style="margin-top:36px;">
-        <a href="tel:3103602275" class="contact-card">
-          <div class="contact-card-icon">📞</div>
+        <!-- La tarjeta de teléfono se quitó: aquí no se atiende por llamada.
+             En su lugar va la de entradas, que responde la pregunta con la que
+             más gente llega a esta página — dónde saco mis invitaciones. -->
+        <a href="https://wa.me/573103602275" target="_blank" rel="noopener" class="contact-card">
+          <div class="contact-card-icon">💬</div>
           <div>
-            <div class="contact-card-label">Teléfono</div>
+            <div class="contact-card-label">WhatsApp</div>
             <div class="contact-card-value">310 360 2275</div>
-            <div class="contact-card-sub">Llamadas y WhatsApp</div>
+            <div class="contact-card-sub">Cotizaciones y preguntas</div>
+          </div>
+        </a>
+        <a href="https://entradas.eventoshersa.com" class="contact-card">
+          <div class="contact-card-icon">🎟️</div>
+          <div>
+            <div class="contact-card-label">Entradas de grado</div>
+            <div class="contact-card-value">Consúltalas aquí</div>
+            <div class="contact-card-sub">Para estudiantes y familias</div>
           </div>
         </a>
         <div class="contact-card" style="cursor:default;">
@@ -1026,14 +1116,6 @@
             <div class="contact-card-sub">Cali, Valle del Cauca</div>
           </div>
         </div>
-        <a href="https://wa.me/573103602275" target="_blank" class="contact-card">
-          <div class="contact-card-icon">💬</div>
-          <div>
-            <div class="contact-card-label">WhatsApp</div>
-            <div class="contact-card-value">Escríbenos ahora</div>
-            <div class="contact-card-sub">Respuesta rápida</div>
-          </div>
-        </a>
       </div>
     </div>
 
@@ -1061,8 +1143,13 @@
     <div class="footer-ornament-line right"></div>
   </div>
 
+  <!-- Sin el ícono de teléfono: aquí no se atiende por llamada. El número se
+       deja porque es el mismo del WhatsApp y la gente lo busca en el pie, pero
+       al tocarlo abre el chat. -->
   <div class="footer-info">
-    📞 310 360 2275 &nbsp;·&nbsp; 📍 Cra 127a #20-22, Cali, Valle del Cauca
+    <a href="https://wa.me/573103602275" target="_blank" rel="noopener"
+       style="color:inherit;text-decoration:none;">💬 310 360 2275</a>
+    &nbsp;·&nbsp; 📍 Cra 127a #20-22, Cali, Valle del Cauca
   </div>
 
   <div class="footer-copy">
